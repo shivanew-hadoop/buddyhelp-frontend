@@ -1,11 +1,155 @@
 <!DOCTYPE html>
 <html>
-<head><title>Login</title></head>
+<head>
+  <title>BuddyHelp – Login / Signup</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #eef2f7;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 400px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #1d3557;
+      margin-bottom: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      border-bottom: 3px solid transparent;
+    }
+
+    .activeTab {
+      border-bottom: 3px solid #1d3557;
+      color: #1d3557;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: #1d3557;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .forgot {
+      margin-top: 12px;
+      text-align: right;
+    }
+
+    .forgot a {
+      color: #1d3557;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+</head>
 <body>
-<h2>Login</h2>
-<input id="email" placeholder="Email"><br>
-<input id="password" placeholder="Password" type="password"><br>
-<button onclick="login()">Login</button>
-<script src="login.js"></script>
+
+<div class="container">
+
+  <div class="logo">BuddyHelp</div>
+
+  <div class="tabs">
+    <div id="loginTab" class="tab activeTab" onclick="switchTab('login')">Login</div>
+    <div id="signupTab" class="tab" onclick="switchTab('signup')">Signup</div>
+    <div id="forgotTab" class="tab" onclick="switchTab('forgot')">Forgot Password</div>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div id="loginForm">
+    <input id="loginEmail" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div class="forgot"><a onclick="switchTab('forgot')">Forgot password?</a></div>
+  </div>
+
+  <!-- SIGNUP FORM -->
+  <div id="signupForm" class="hidden">
+    <input id="name" placeholder="Full Name">
+    <input id="email" placeholder="Email">
+    <input id="phone" placeholder="Phone">
+    <input id="country" placeholder="Country">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="signup()">Create Account</button>
+  </div>
+
+  <!-- FORGOT PASSWORD FORM -->
+  <div id="forgotForm" class="hidden">
+    <input id="forgotEmail" placeholder="Enter your email to reset password">
+    <button onclick="resetPassword()">Send Reset Link</button>
+  </div>
+
+</div>
+
+<script src="login.js?v=3"></script>
+
+<script>
+function switchTab(tab) {
+  // Hide all
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("signupForm").classList.add("hidden");
+  document.getElementById("forgotForm").classList.add("hidden");
+
+  // Remove active
+  document.getElementById("loginTab").classList.remove("activeTab");
+  document.getElementById("signupTab").classList.remove("activeTab");
+  document.getElementById("forgotTab").classList.remove("activeTab");
+
+  if (tab === "login") {
+    document.getElementById("loginForm").classList.remove("hidden");
+    document.getElementById("loginTab").classList.add("activeTab");
+  } 
+  else if (tab === "signup") {
+    document.getElementById("signupForm").classList.remove("hidden");
+    document.getElementById("signupTab").classList.add("activeTab");
+  }
+  else if (tab === "forgot") {
+    document.getElementById("forgotForm").classList.remove("hidden");
+    document.getElementById("forgotTab").classList.add("activeTab");
+  }
+}
+</script>
+
 </body>
 </html>
