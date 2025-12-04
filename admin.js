@@ -1,12 +1,14 @@
-console.log("Admin JS Loaded-NS");
+console.log("Admin JS Loaded-NB");
 
 const API = "https://buddyhelp-backend.onrender.com";
+let ADMIN_EMAIL = ""; // Show admin name in UI
 
+/* -------------------- ADMIN LOGIN -------------------- */
 async function adminLogin() {
-  console.log("Login clicked");
-
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
+
+  ADMIN_EMAIL = email; // Save admin name for display
 
   const res = await fetch(API + "/login", {
     method: "POST",
@@ -15,27 +17,29 @@ async function adminLogin() {
   });
 
   const data = await res.json();
-  console.log("Admin login response:", data);
 
   if (data.error) {
     alert("Login failed: " + data.error);
     return;
   }
 
-  // Login successful → hide login box, show dashboard
+  // Hide login screen
   document.getElementById("loginBox").style.display = "none";
+
+  // Show dashboard & header
   document.getElementById("dashboard").style.display = "block";
+  document.getElementById("header").style.display = "flex";
+
+  // Display admin name
+  document.getElementById("adminName").innerText = "Logged in as: " + ADMIN_EMAIL;
 
   loadUsers();
 }
 
+/* -------------------- LOAD USERS -------------------- */
 async function loadUsers() {
-  console.log("Loading users...");
-
   const res = await fetch(API + "/admin/users");
   const data = await res.json();
-
-  console.log("Users:", data);
 
   const container = document.getElementById("users");
   container.innerHTML = "";
@@ -46,13 +50,19 @@ async function loadUsers() {
   }
 
   data.users.forEach(u => {
-    const div = document.createElement("div");
-    div.className = "userCard";
+    const joined = u.created_at ? u.created_at.substring(0, 10) : "N/A";
 
-    div.innerHTML = `
-      <h3>${u.name} <small>(${u.country})</small></h3>
-      <p>Status: <b>${u.status}</b></p>
-      <p>Credits: <b>${u.credits.remaining_seconds}</b></p>
+    const card = document.createElement("div");
+    card.className = "userCard";
+
+    card.innerHTML = `
+      <h3>${u.name}</h3>
+      <div class="userDetail"><b>Email:</b> ${u.email}</div>
+      <div class="userDetail"><b>Phone:</b> ${u.phone}</div>
+      <div class="userDetail"><b>Country:</b> ${u.country}</div>
+      <div class="userDetail"><b>Joined:</b> ${joined}</div>
+      <div class="userDetail"><b>Status:</b> <span id="status-${u.id}">${u.status}</span></div>
+      <div class="userDetail"><b>Credits:</b> <span id="credits-${u.id}">${u.credits.remaining_seconds}</span></div>
 
       <div class="btnRow">
         <button class="approveBtn" onclick="approveUser('${u.id}')">Approve</button>
@@ -60,10 +70,11 @@ async function loadUsers() {
       </div>
     `;
 
-    container.appendChild(div);
+    container.appendChild(card);
   });
 }
 
+/* -------------------- APPROVE USER -------------------- */
 async function approveUser(uid) {
   await fetch(API + "/admin/approve", {
     method: "POST",
@@ -71,14 +82,14 @@ async function approveUser(uid) {
     body: JSON.stringify({ userId: uid })
   });
 
-  alert("User approved");
-  loadUsers();
+  document.getElementById("status-" + uid).innerText = "ACTIVE";
+  alert("User approved successfully");
 }
 
+/* -------------------- ADD CREDITS -------------------- */
 function addCreditsPrompt(uid) {
   const sec = prompt("Enter seconds to add:");
   if (!sec || isNaN(sec)) return;
-
   addCredits(uid, parseInt(sec));
 }
 
@@ -90,5 +101,13 @@ async function addCredits(uid, sec) {
   });
 
   alert("Credits added");
-  loadUsers();
+
+  // Refresh UI for this user only
+  const res = await fetch(API + "/admin/users");
+  const data = await res.json();
+  const updatedUser = data.users.find(x => x.id === uid);
+
+  if (updatedUser) {
+    document.getElementById("credits-" + uid).innerText = updatedUser.credits.remaining_seconds;
+  }
 }
