@@ -1,4 +1,4 @@
-console.log("Admin JS LOADED");
+console.log("ADMIN JS LOADED (v10)");
 
 const API = "https://buddyhelp-backend.onrender.com";
 
@@ -10,9 +10,7 @@ async function adminLogin() {
 
     const res = await fetch(`${API}/login`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
     });
 
@@ -28,13 +26,14 @@ async function adminLogin() {
     loadUsers();
 }
 
+
 async function loadUsers() {
-    console.log("loadUsers called");
+    console.log("loadUsers called → calling:", `${API}/admin/users`);
 
     const res = await fetch(`${API}/admin/users`);
     const data = await res.json();
 
-    console.log("Users response:", data);
+    console.log("Users API response:", data);
 
     const container = document.getElementById("users");
 
@@ -46,18 +45,22 @@ async function loadUsers() {
     container.innerHTML = "";
 
     data.users.forEach(u => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-            <p><strong>${u.name}</strong> (${u.country})  
-            - Status: ${u.status}  
-            - Credits: ${u.credits?.remaining_seconds}</p>
-            <button onclick="approve('${u.id}')">Approve</button>
-            <button onclick="addCredits('${u.id}')">Add Credits</button>
-            <hr/>
+        const html = `
+            <div>
+                <p>
+                    <strong>${u.name}</strong> (${u.country})<br>
+                    Status: ${u.status}<br>
+                    Credits: ${u.credits?.remaining_seconds}
+                </p>
+                <button onclick="approve('${u.id}')">Approve</button>
+                <button onclick="addCredits('${u.id}')">Add Credits</button>
+                <hr>
+            </div>
         `;
-        container.appendChild(div);
+        container.innerHTML += html;
     });
 }
+
 
 async function approve(userId) {
     await fetch(`${API}/admin/approve`, {
