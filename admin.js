@@ -1,5 +1,5 @@
 async function loadUsers() {
-  const res = await fetch("https://your-backend.onrender.com/admin/users");
+  const res = await fetch("https://buddyhelp-backend.onrender.com/admin/users");
   const data = await res.json();
 
   const box = document.getElementById("users");
@@ -22,7 +22,7 @@ async function loadUsers() {
 }
 
 async function approve(id) {
-  await fetch("https://your-backend.onrender.com/admin/approve", {
+  await fetch("https://buddyhelp-backend.onrender.com/admin/approve", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ userId: id })
@@ -31,7 +31,7 @@ async function approve(id) {
 }
 
 async function addCredits(id) {
-  await fetch("https://your-backend.onrender.com/admin/add-credits", {
+  await fetch("https://buddyhelp-backend.onrender.com/admin/add-credits", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ userId: id, seconds: 3600 })

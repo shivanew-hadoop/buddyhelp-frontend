@@ -7,7 +7,7 @@ async function signup() {
     password: document.getElementById("password").value
   };
 
-  const res = await fetch("https://your-backend.onrender.com/signup", {
+  const res = await fetch("https://buddyhelp-backend.onrender.com/signup", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify(body)
