@@ -1,23 +1,18 @@
 console.log("Admin JS LOADED");
 
-const BASE_URL = "https://buddyhelp-backend.onrender.com";
-let adminToken = null;
+const API = "https://buddyhelp-backend.onrender.com";
 
-// Admin login (using Supabase admin user)
 async function adminLogin() {
     console.log("adminLogin called");
 
     const email = document.getElementById("adminEmail").value;
     const password = document.getElementById("adminPassword").value;
 
-    if (!email || !password) {
-        alert("Enter admin email & password");
-        return;
-    }
-
-    const res = await fetch(BASE_URL + "/login", {
+    const res = await fetch(`${API}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({ email, password })
     });
 
@@ -29,62 +24,58 @@ async function adminLogin() {
         return;
     }
 
-    adminToken = data.token;
-
-    alert("Admin login successful!");
+    localStorage.setItem("adminToken", data.token);
     loadUsers();
 }
 
-// Load all users
 async function loadUsers() {
     console.log("loadUsers called");
 
-    const res = await fetch(BASE_URL + "/admin/users");
+    const res = await fetch(`${API}/admin/users`);
     const data = await res.json();
 
     console.log("Users response:", data);
 
-    if (!data.users) {
-        document.getElementById("users").innerHTML = "No users found";
+    const container = document.getElementById("users");
+
+    if (!data.users || data.users.length === 0) {
+        container.innerHTML = "<p>No users found</p>";
         return;
     }
 
-    const html = data.users.map(u => `
-        <div style="margin-bottom:10px;">
-            <b>${u.name}</b> (${u.id})<br>
-            Status: ${u.status}<br>
-            Credits: ${u.credits?.remaining_seconds}<br>
+    container.innerHTML = "";
 
+    data.users.forEach(u => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+            <p><strong>${u.name}</strong> (${u.country})  
+            - Status: ${u.status}  
+            - Credits: ${u.credits?.remaining_seconds}</p>
             <button onclick="approve('${u.id}')">Approve</button>
-            <button onclick="addCreditsPrompt('${u.id}')">Add Credits</button>
-        </div>
-    `).join("");
-
-    document.getElementById("users").innerHTML = html;
+            <button onclick="addCredits('${u.id}')">Add Credits</button>
+            <hr/>
+        `;
+        container.appendChild(div);
+    });
 }
 
-async function approve(uid) {
-    await fetch(BASE_URL + "/admin/approve", {
+async function approve(userId) {
+    await fetch(`${API}/admin/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: uid })
+        body: JSON.stringify({ userId })
     });
-    alert("Approved");
+
     loadUsers();
 }
 
-function addCreditsPrompt(uid) {
+async function addCredits(userId) {
     const sec = prompt("Enter seconds to add:");
-    if (!sec) return;
-    addCredits(uid, parseInt(sec));
-}
-
-async function addCredits(uid, seconds) {
-    await fetch(BASE_URL + "/admin/add-credits", {
+    await fetch(`${API}/admin/add-credits`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: uid, seconds })
+        body: JSON.stringify({ userId, seconds: Number(sec) })
     });
-    alert("Credits added");
+
     loadUsers();
 }
