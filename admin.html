@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><title>Admin Panel</title></head>
+<head>
+  <title>Admin Panel</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    input, button { margin: 5px; padding: 6px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f2f2f2; }
+  </style>
+</head>
+
 <body>
-<h2>Admin Panel</h2>
+
+<h2>Admin Login</h2>
+
+<input id="adminEmail" placeholder="Admin Email"><br>
+<input id="adminPassword" placeholder="Admin Password" type="password"><br>
+<button onclick="adminLogin()">Login</button>
+
+<hr style="margin-top:25px;">
+
+<h2>Users</h2>
 <div id="users"></div>
+
 <script src="admin.js"></script>
+
 </body>
 </html>
