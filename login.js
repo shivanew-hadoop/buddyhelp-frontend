@@ -1,6 +1,8 @@
 const API = "https://buddyhelp-backend.onrender.com";
 
-/* LOGIN */
+/* ---------------------------------------
+   LOGIN  (FINAL WORKING VERSION)
+--------------------------------------- */
 async function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
@@ -13,13 +15,21 @@ async function login() {
 
   const data = await res.json();
 
-  if (data.error) return alert(data.error);
+  if (data.error) {
+    alert(data.error);
+    return;
+  }
 
-  alert("Login successful");
+  // STORE TOKEN + FULL USER
+  localStorage.setItem("bh_token", data.token);
+  localStorage.setItem("bh_user", JSON.stringify(data.user));
+
   window.location.href = "app.html";
 }
 
-/* SIGNUP */
+/* ---------------------------------------
+   SIGNUP (unchanged)
+--------------------------------------- */
 async function signup() {
   const body = {
     name: document.getElementById("name").value,
@@ -39,15 +49,33 @@ async function signup() {
   alert(data.message || data.error);
 }
 
-/* PASSWORD RESET */
+/* ---------------------------------------
+   PASSWORD RESET (unchanged)
+--------------------------------------- */
 async function resetPassword() {
   const email = document.getElementById("forgotEmail").value;
 
-  const res = await fetch(API + "/auth/v1/recover", {
+  await fetch(API + "/auth/v1/recover", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email })
   });
 
-  alert("If the email exists, reset link has been sent.");
+  alert("If email exists, reset link sent.");
+}
+
+/* ---------------------------------------
+   TAB SWITCH
+--------------------------------------- */
+function switchTab(tab) {
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("signupForm").classList.add("hidden");
+  document.getElementById("forgotForm").classList.add("hidden");
+
+  document.getElementById("loginTab").classList.remove("activeTab");
+  document.getElementById("signupTab").classList.remove("activeTab");
+  document.getElementById("forgotTab").classList.remove("activeTab");
+
+  document.getElementById(tab + "Form").classList.remove("hidden");
+  document.getElementById(tab + "Tab").classList.add("activeTab");
 }
